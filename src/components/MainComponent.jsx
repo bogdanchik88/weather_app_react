@@ -3,7 +3,8 @@ import { fetchCityWeather } from '../api/cityApi'
 import { useQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import { cityStore } from '../store/cityStore'
-import useCurrentHourValue from '../service/useCurrentHourValue'
+import useCurrentHourValue from '../hooks/useCurrentHourValue'
+import useWeatherIcon from '../hooks/useWeatherIcon'
 
 const MainComponent = observer(() => {
   const inputRef = useRef()
@@ -31,6 +32,8 @@ const MainComponent = observer(() => {
       data?.hourly?.weathercode
     )
 
+    const WeatherIcon = useWeatherIcon(weatherCode)
+
   return (
     <div className='flex flex-col gap-2 justify-center items-center h-[100vh] w-10/12 max-w-[500px] text-lg'>
       <h1 className='text-2xl text-rose-700 hover:text-violet-700 hover:scale-[120%] md:text-4xl'>Tailwind connected</h1>
@@ -48,7 +51,7 @@ const MainComponent = observer(() => {
           <p>Weather code: {data.current_weather.weathercode}</p>
           <p>Wind direction: {data.current_weather.winddirection}°</p>
           <p>Humidity: {humidity}</p>
-          <p>weatherCode: {weatherCode}</p>
+          <p>weatherCode: {weatherCode && <WeatherIcon className='size-10'/>}</p>
         </div>
       )}
 
