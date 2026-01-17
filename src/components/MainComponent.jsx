@@ -1,26 +1,22 @@
-import { useState } from 'react'
+import { useRef } from 'react'
 import { fetchCityWeather } from '../api/cityApi'
 import { useQuery } from '@tanstack/react-query'
+import { observer } from 'mobx-react-lite'
+import { cityStore } from '../store/cityStore'
 
-const MainComponent = () => {
-
-    const [city, setCity] = useState('Москва')
-    const [submittedCity, setSubmittedCity] = useState('Москва')
-    const [temperature, setTemperature] = useState('?')
-    const [windSpeed, setWindSpeed] = useState('?')
-    const [weatherCode, setWeatherCode] = useState('?')
-    const [windDirection, setWindDirection] = useState('?')
-
+const MainComponent = observer(() => {
+  const inputRef = useRef()
 
     const { data, error, refetch, isLoading, isError } = useQuery({
-      queryKey: ['weather', submittedCity],
-      queryFn: () => fetchCityWeather(submittedCity),
-      enabled: !!submittedCity
+      queryKey: ['weather', cityStore.city],
+      queryFn: () => fetchCityWeather(cityStore.city),
+      enabled: !!cityStore.city
     })
 
     const handleData = async (e) => {
         e.preventDefault()
-        setSubmittedCity(city)
+        cityStore.submitCity()
+        inputRef.current.blur()
     }
 
     const current = data?.current_weather
@@ -29,7 +25,7 @@ const MainComponent = () => {
     <div className='flex flex-col gap-2 justify-center items-center h-[100vh] w-10/12 max-w-[500px] text-lg'>
       <h1 className='text-2xl text-rose-700 hover:text-violet-700 hover:scale-[120%] md:text-4xl'>Tailwind connected</h1>
       <form onSubmit={handleData}>
-        <input value={city} onChange={(e) => setCity(e.target.value)} />
+        <input value={cityStore.inputCity} onChange={(e) => cityStore.setInputCity(e.target.value)} ref={inputRef}/>
         <button type='submit'>fetch weather</button>        
       </form>
       {isLoading && <p>Loading...</p>}
@@ -46,6 +42,6 @@ const MainComponent = () => {
 
     </div>
   )
-}
+})
 
 export default MainComponent

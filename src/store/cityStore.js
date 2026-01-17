@@ -1,17 +1,22 @@
 import { makeAutoObservable } from "mobx"
 
-class cityStore {
+class CityStore {
 
     constructor() {
         makeAutoObservable(this)
     }    
 
-    city = localStorage.getItem('city' || 'Москва')
+    inputCity = localStorage.getItem('city') ?? 'Москва'
+    city = this.inputCity
 
-    setCity = (newCity) => {
-        this.city = newCity
-        localStorage.setItem('city', newCity)
+    setInputCity = (value) => {
+        this.inputCity = value
+    }
+
+    submitCity = () => {
+        this.city = this.inputCity
+        localStorage.setItem('city', this.city)
     }
 }
 
-export const cityStore = new cityStore()
+export const cityStore = new CityStore()
