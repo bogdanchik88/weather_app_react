@@ -4,7 +4,10 @@ import MainComponent from './components/MainComponent'
 function App() {
 
   return (
-    <MainComponent/>
+    <div className='flex justify-center items-center'>
+      <MainComponent/>      
+    </div>
+
   )
 }
 
