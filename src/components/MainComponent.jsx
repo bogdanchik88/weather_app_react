@@ -3,13 +3,12 @@ import { fetchCityWeather } from '../api/cityApi'
 import { useQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import { cityStore } from '../store/cityStore'
-import getCurrentHumidity from '../service/humidityFunc'
-import getCurrentWeatherCode from '../service/WeatherCodeFunc'
+import useCurrentHourValue from '../service/useCurrentHourValue'
 
 const MainComponent = observer(() => {
   const inputRef = useRef()
 
-    const { data, error, refetch, isLoading, isError } = useQuery({
+    const { data, error, isLoading, isError } = useQuery({
       queryKey: ['weather', cityStore.city],
       queryFn: () => fetchCityWeather(cityStore.city),
       enabled: !!cityStore.city,
@@ -23,7 +22,14 @@ const MainComponent = observer(() => {
         inputRef.current.blur()
     }
 
-    const current = data?.current_weather
+    const current = data
+    const humidity = useCurrentHourValue(
+      data?.hourly?.relative_humidity_2m
+    )
+
+    const weatherCode = useCurrentHourValue(
+      data?.hourly?.weathercode
+    )
 
   return (
     <div className='flex flex-col gap-2 justify-center items-center h-[100vh] w-10/12 max-w-[500px] text-lg'>
@@ -41,8 +47,8 @@ const MainComponent = observer(() => {
           <p>Wind speed: {data.current_weather.windspeed} km/h</p>
           <p>Weather code: {data.current_weather.weathercode}</p>
           <p>Wind direction: {data.current_weather.winddirection}°</p>
-          <p>Humidity: {getCurrentHumidity(data.hourly.relative_humidity_2m)}</p>
-          <p>weatherCode: {getCurrentWeatherCode(data.hourly.weathercode)}</p>
+          <p>Humidity: {humidity}</p>
+          <p>weatherCode: {weatherCode}</p>
         </div>
       )}
 
